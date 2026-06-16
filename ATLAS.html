@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ATLAS · Foro-Portafolio Mundial</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Share+Tech+Mono&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --void:#03030a;
+  --surface:#0a0a12;
+  --surface2:#10101c;
+  --surface3:#161624;
+  --green:#00ff88;
+  --green-dim:#00ff8830;
+  --green-muted:#00ff8810;
+  --cyan:#00d4ff;
+  --cyan-dim:#00d4ff22;
+  --gold:#c9a96e;
+  --gold-dim:#c9a96e30;
+  --gold-bright:#e8c87a;
+  --violet:#b388ff;
+  --violet-dim:#b388ff22;
+  --red:#ff4455;
+  --amber:#ffaa00;
+  --amber-dim:#ffaa0022;
+  --text:#c8d8c8;
+  --text-dim:#4a5a4a;
+  --text-muted:#2a3a2a;
+  --border:#00ff8815;
+  --border-gold:#c9a96e18;
+  --mono:'Share Tech Mono',monospace;
+  --serif:'Cormorant Garamond',serif;
+  --cinzel:'Cinzel',serif;
+  --space:'Space Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--void);color:var(--text);font-family:var(--mono);min-height:100vh;overflow-x:hidden;cursor:crosshair;}
+
+/* SCANLINES */
+body::before{content:'';position:fixed;inset:0;z-index:2000;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);}
+body::after{content:'';position:fixed;inset:0;z-index:1999;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+/* ═══════════════════════════════════════════
+   BOOT SCREEN
+═══════════════════════════════════════════ */
+#boot{position:fixed;inset:0;z-index:1000;background:var(--void);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;}
+.boot-atlas-glyph{font-family:var(--cinzel);font-size:5rem;color:var(--gold);margin-bottom:1.5rem;text-shadow:0 0 40px var(--gold-dim);letter-spacing:.3em;opacity:0;animation:fadeIn 1s .3s forwards;}
+@keyframes fadeIn{to{opacity:1}}
+.boot-line{font-family:var(--mono);font-size:.78rem;color:var(--green);opacity:0;margin:.12rem 0;letter-spacing:.05em;animation:bootAppear .08s forwards;text-shadow:0 0 6px var(--green);}
+.boot-line.gold{color:var(--gold);text-shadow:0 0 6px var(--gold-dim);}
+.boot-line.cyan{color:var(--cyan);}
+@keyframes bootAppear{to{opacity:1}}
+.boot-cursor{display:inline-block;width:8px;height:14px;background:var(--green);animation:blink .7s step-end infinite;margin-left:4px;vertical-align:middle;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+#bootEnter{margin-top:2.5rem;padding:.7rem 3rem;border:1px solid var(--gold);background:none;color:var(--gold);font-family:var(--cinzel);font-size:.8rem;cursor:pointer;letter-spacing:.4em;text-transform:uppercase;opacity:0;transition:all .3s;text-shadow:0 0 10px var(--gold-dim);box-shadow:0 0 20px var(--gold-dim),inset 0 0 20px transparent;}
+#bootEnter:hover{background:var(--gold-dim);box-shadow:0 0 35px var(--gold-dim),inset 0 0 20px var(--gold-dim);}
+#bootEnter.visible{opacity:1}
+
+/* ═══════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════ */
+#main{display:none;}
+#readingProgress{position:fixed;top:0;left:0;right:0;height:2px;background:transparent;z-index:300;}
+#readingBar{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));width:0%;transition:width .1s;box-shadow:0 0 8px var(--green);}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:1.5rem 0;z-index:100;overflow-y:auto;display:flex;flex-direction:column;}
+.sidebar::-webkit-scrollbar{width:2px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--green-dim)}
+.sidebar-logo{padding:0 1.25rem 1.5rem;border-bottom:1px solid var(--border);margin-bottom:1rem;}
+.logo-atlas{font-family:var(--cinzel);font-size:1.4rem;color:var(--gold);letter-spacing:.3em;text-shadow:0 0 15px var(--gold-dim);}
+.logo-sub{font-size:.55rem;color:var(--text-dim);margin-top:.3rem;letter-spacing:.15em;line-height:1.5;}
+.nav-section{padding:.65rem 1.25rem .2rem;font-size:.5rem;letter-spacing:.3em;color:var(--text-muted);text-transform:uppercase;}
+.nav-item{display:block;padding:.4rem 1.25rem;font-size:.6rem;letter-spacing:.08em;color:var(--text-dim);cursor:pointer;transition:all .15s;border-left:2px solid transparent;text-transform:uppercase;text-decoration:none;}
+.nav-item:hover{color:var(--green);background:var(--green-muted);}
+.nav-item.active{color:var(--green);border-left-color:var(--green);background:var(--green-muted);}
+.nav-item.gold:hover,.nav-item.gold.active{color:var(--gold);border-left-color:var(--gold);background:var(--gold-dim);}
+.sidebar-spacer{flex:1}
+.sidebar-rank{padding:.75rem 1.25rem;border-top:1px solid var(--border);}
+.rank-label{font-size:.5rem;letter-spacing:.2em;color:var(--text-muted);text-transform:uppercase;margin-bottom:.4rem;}
+.rank-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .6rem;border:1px solid var(--gold-dim);border-radius:3px;font-size:.6rem;color:var(--gold);}
+.rank-badge-icon{width:6px;height:6px;border-radius:50%;background:var(--gold);}
+.nav-progress{padding:.75rem 1.25rem;border-top:1px solid var(--border);}
+.progress-label{font-size:.5rem;letter-spacing:.15em;color:var(--text-muted);margin-bottom:.4rem;}
+.progress-bar{height:2px;background:var(--surface2);border-radius:1px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:1px;transition:width .5s ease;width:0%;}
+.progress-pct{font-size:.55rem;color:var(--text-dim);margin-top:.3rem;}
+
+/* CONTENT AREA */
+.content{margin-left:240px;min-height:100vh;overflow-y:auto;height:100vh;padding:3rem 4rem 8rem;}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-thumb{background:var(--green-dim)}
+
+/* SECTIONS */
+.chapter{max-width:720px;margin:0 auto 8rem;opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s;}
+.chapter.visible{opacity:1;transform:translateY(0);}
+
+/* ═══════════════════════════════════════════
+   LANDING / COVER
+═══════════════════════════════════════════ */
+.cover{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:4rem 0;}
+.cover-eyebrow{font-size:.6rem;letter-spacing:.5em;color:var(--green);text-transform:uppercase;margin-bottom:2rem;text-shadow:0 0 10px var(--green-dim);}
+.cover-sigil{font-family:var(--cinzel);font-size:5.5rem;font-weight:700;line-height:1;color:var(--gold);text-shadow:0 0 60px var(--gold-dim),0 0 100px var(--gold-dim);margin-bottom:.3rem;letter-spacing:.15em;}
+.cover-title-row{font-family:var(--serif);font-size:2.2rem;font-weight:300;color:#e8e8e8;margin-bottom:.5rem;line-height:1.2;}
+.cover-title-row em{color:var(--green);font-style:italic;}
+.cover-subtitle{font-family:var(--serif);font-size:1.3rem;font-weight:300;font-style:italic;color:var(--gold);margin-bottom:2.5rem;}
+.cover-divider{font-size:.6rem;color:var(--green-dim);letter-spacing:.15em;margin:1.5rem 0;font-family:var(--mono);}
+.cover-meta{font-size:.6rem;letter-spacing:.15em;color:var(--text-dim);border-top:1px solid var(--border);padding-top:1.5rem;display:flex;gap:2rem;flex-wrap:wrap;}
+.cover-meta span::before{content:'// ';}
+.cover-cta-row{display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap;}
+.btn-primary{padding:.6rem 1.8rem;border:1px solid var(--gold);background:var(--gold-dim);color:var(--gold);font-family:var(--cinzel);font-size:.7rem;letter-spacing:.25em;cursor:pointer;transition:all .25s;text-transform:uppercase;}
+.btn-primary:hover{background:var(--gold);color:var(--void);box-shadow:0 0 25px var(--gold-dim);}
+.btn-ghost{padding:.6rem 1.8rem;border:1px solid var(--border);background:none;color:var(--text-dim);font-family:var(--mono);font-size:.65rem;letter-spacing:.15em;cursor:pointer;transition:all .25s;text-transform:uppercase;}
+.btn-ghost:hover{border-color:var(--green-dim);color:var(--green);}
+.stat-row{display:flex;gap:3rem;margin-top:3rem;flex-wrap:wrap;}
+.stat-item{display:flex;flex-direction:column;gap:.25rem;}
+.stat-num{font-family:var(--cinzel);font-size:1.8rem;color:var(--gold);line-height:1;}
+.stat-label{font-size:.55rem;letter-spacing:.25em;color:var(--text-dim);text-transform:uppercase;}
+
+/* ═══════════════════════════════════════════
+   TERMINAL
+═══════════════════════════════════════════ */
+.terminal{background:var(--surface);border:1px solid var(--border);border-radius:4px;margin:2rem 0;overflow:hidden;}
+.terminal-header{display:flex;align-items:center;gap:.5rem;padding:.55rem 1rem;background:var(--surface2);border-bottom:1px solid var(--border);}
+.term-dot{width:8px;height:8px;border-radius:50%;}
+.term-dot.red{background:#ff5f57}.term-dot.yellow{background:#febc2e}.term-dot.green{background:#28c840}
+.term-title{font-size:.58rem;color:var(--text-dim);margin-left:.5rem;letter-spacing:.1em;}
+.terminal-body{padding:1.2rem 1.5rem;font-size:.78rem;line-height:1.9;}
+.t-prompt{color:var(--green)}.t-cmd{color:var(--text)}.t-out{color:var(--text-dim);display:block;margin-top:.12rem}
+.t-err{color:var(--red)}.t-warn{color:var(--gold)}.t-comment{color:var(--text-muted)}
+.t-highlight{color:var(--cyan);text-shadow:0 0 8px var(--cyan-dim)}
+.t-gold{color:var(--gold);text-shadow:0 0 6px var(--gold-dim)}
+.t-violet{color:var(--violet);text-shadow:0 0 8px var(--violet-dim)}
+.t-line{margin:.2rem 0;}
+
+/* ═══════════════════════════════════════════
+   PROSE
+═══════════════════════════════════════════ */
+.prose{font-family:var(--serif);font-size:1.15rem;line-height:1.85;color:#d0cdc8;margin:1.5rem 0;font-weight:300;}
+.prose em{color:var(--gold);font-style:italic;}
+.prose strong{color:var(--green);font-weight:400;font-family:var(--mono);font-size:.88rem;}
+.en-prose{font-family:var(--space);font-size:.82rem;line-height:1.9;color:var(--text-dim);margin:1.5rem 0;padding-left:1.5rem;border-left:2px solid var(--green-dim);font-style:italic;}
+.axiom{border:1px solid var(--gold-dim);border-radius:4px;padding:1.5rem 2rem;margin:2rem 0;background:linear-gradient(135deg,var(--gold-dim),transparent);position:relative;}
+.axiom::before{content:'AXIOM';position:absolute;top:-.5rem;left:1rem;font-size:.52rem;letter-spacing:.3em;color:var(--gold);background:var(--void);padding:0 .5rem;}
+.axiom-text{font-family:var(--serif);font-size:1.2rem;font-weight:300;font-style:italic;color:var(--gold);line-height:1.7;}
+.axiom-en{font-size:.78rem;color:var(--text-dim);margin-top:.75rem;font-family:var(--space);font-style:italic;}
+
+/* ═══════════════════════════════════════════
+   SECTION HEADERS
+═══════════════════════════════════════════ */
+.ch-number{font-size:.58rem;letter-spacing:.4em;color:var(--green);text-transform:uppercase;margin-bottom:.75rem;}
+.ch-title{font-family:var(--cinzel);font-size:2rem;font-weight:600;color:#e8e8e8;margin-bottom:.3rem;letter-spacing:.05em;}
+.ch-en{font-family:var(--space);font-size:.75rem;color:var(--text-dim);margin-bottom:2rem;font-style:italic;}
+.section-div{text-align:center;margin:3rem 0;color:var(--text-muted);font-size:.65rem;letter-spacing:.3em;}
+.footnote{font-size:.65rem;color:var(--text-muted);border-top:1px solid var(--border);padding-top:.75rem;margin-top:2rem;line-height:1.6;font-family:var(--space);}
+
+/* ═══════════════════════════════════════════
+   ABOUT ME
+═══════════════════════════════════════════ */
+.about-hero{display:flex;gap:2.5rem;align-items:flex-start;margin:2rem 0;flex-wrap:wrap;}
+.about-avatar{width:100px;height:100px;border-radius:50%;border:2px solid var(--gold-dim);background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;position:relative;}
+.about-avatar::after{content:'DV';font-family:var(--cinzel);font-size:1.8rem;color:var(--gold);position:absolute;}
+.about-avatar-ring{position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--green-dim);animation:spin 8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.about-text-block{flex:1;min-width:240px;}
+.about-name{font-family:var(--cinzel);font-size:1.6rem;color:var(--gold);margin-bottom:.25rem;letter-spacing:.05em;}
+.about-title{font-size:.65rem;letter-spacing:.2em;color:var(--green);text-transform:uppercase;margin-bottom:.75rem;}
+.about-bio{font-family:var(--serif);font-size:1rem;line-height:1.8;color:#c8c4b8;font-weight:300;}
+.about-bio em{color:var(--gold)}
+.about-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem;}
+.about-tag{padding:.2rem .6rem;border:1px solid var(--border);color:var(--text-dim);font-size:.58rem;letter-spacing:.1em;border-radius:3px;text-transform:uppercase;transition:all .15s;}
+.about-tag:hover{border-color:var(--green-dim);color:var(--green);}
+.about-tag.gold{border-color:var(--gold-dim);color:var(--gold);}
+.about-manifesto{background:var(--surface);border:1px solid var(--gold-dim);border-radius:4px;padding:1.5rem 2rem;margin:2rem 0;position:relative;}
+.about-manifesto::before{content:'MANIFIESTO';position:absolute;top:-.5rem;left:1rem;font-size:.5rem;letter-spacing:.3em;color:var(--gold);background:var(--void);padding:0 .5rem;}
+.manifesto-line{font-family:var(--serif);font-size:1.1rem;font-weight:300;color:#d0cdc8;line-height:1.9;}
+.manifesto-line em{color:var(--gold)}
+.manifesto-line strong{color:var(--green);font-family:var(--mono);font-weight:400;font-size:.85rem;}
+.about-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1rem;margin:2rem 0;}
+.metric-box{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1rem;text-align:center;transition:all .2s;}
+.metric-box:hover{border-color:var(--green-dim);background:var(--surface2);}
+.metric-num{font-family:var(--cinzel);font-size:1.5rem;color:var(--gold);display:block;}
+.metric-label{font-size:.55rem;letter-spacing:.15em;color:var(--text-dim);text-transform:uppercase;margin-top:.3rem;display:block;}
+
+/* ═══════════════════════════════════════════
+   REVIEWS / TESTIMONIALS
+═══════════════════════════════════════════ */
+.review-grid{display:flex;flex-direction:column;gap:1.25rem;margin:2rem 0;}
+.review-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1.5rem;position:relative;transition:all .2s;}
+.review-card:hover{border-color:var(--green-dim);box-shadow:0 0 20px rgba(0,255,136,.04);}
+.review-stars{color:var(--gold);font-size:.8rem;margin-bottom:.75rem;letter-spacing:.1em;}
+.review-text{font-family:var(--serif);font-size:1rem;font-weight:300;font-style:italic;color:#c8c4b8;line-height:1.8;margin-bottom:1rem;}
+.review-text::before{content:'\201C';font-size:2rem;color:var(--gold-dim);line-height:0;vertical-align:-.4em;margin-right:.25rem;}
+.review-author{display:flex;align-items:center;gap:.75rem;}
+.review-avatar{width:32px;height:32px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--gold);flex-shrink:0;}
+.review-name{font-size:.7rem;color:var(--text);letter-spacing:.05em;}
+.review-role{font-size:.58rem;color:var(--text-dim);letter-spacing:.08em;margin-top:.1rem;}
+.review-badge{position:absolute;top:1rem;right:1rem;font-size:.5rem;letter-spacing:.2em;color:var(--green);border:1px solid var(--green-dim);padding:.15rem .5rem;border-radius:2px;text-transform:uppercase;}
+
+/* ═══════════════════════════════════════════
+   FORUM / FORO MUNDIAL
+═══════════════════════════════════════════ */
+.forum-header{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1.25rem 1.5rem;margin:2rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.forum-title-block{display:flex;flex-direction:column;gap:.2rem;}
+.forum-label{font-size:.55rem;letter-spacing:.3em;color:var(--green);text-transform:uppercase;}
+.forum-name{font-family:var(--cinzel);font-size:1.1rem;color:#e8e8e8;letter-spacing:.05em;}
+.forum-tabs{display:flex;gap:.25rem;}
+.forum-tab{padding:.3rem .8rem;font-size:.6rem;letter-spacing:.1em;border:1px solid var(--border);background:none;color:var(--text-dim);cursor:pointer;transition:all .15s;text-transform:uppercase;}
+.forum-tab.active,.forum-tab:hover{border-color:var(--green-dim);color:var(--green);background:var(--green-muted);}
+.forum-channels{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:1.5rem 0;}
+.channel-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1.25rem;cursor:pointer;transition:all .2s;position:relative;}
+.channel-card:hover{border-color:var(--green-dim);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,255,136,.06);}
+.channel-card.tech{border-color:var(--cyan-dim);}
+.channel-card.tech:hover{border-color:var(--cyan);}
+.channel-card.finance{border-color:var(--gold-dim);}
+.channel-card.finance:hover{border-color:var(--gold);}
+.channel-card.wisdom{border-color:var(--violet-dim);}
+.channel-card.wisdom:hover{border-color:var(--violet);}
+.channel-icon{font-size:1.5rem;margin-bottom:.5rem;}
+.channel-name{font-family:var(--cinzel);font-size:.85rem;color:#e8e8e8;margin-bottom:.25rem;}
+.channel-desc{font-size:.62rem;color:var(--text-dim);line-height:1.5;}
+.channel-count{position:absolute;top:.75rem;right:.75rem;font-size:.55rem;color:var(--text-muted);border:1px solid var(--border);padding:.15rem .4rem;border-radius:2px;}
+.channel-count.live{color:var(--green);border-color:var(--green-dim);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.forum-post{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1.25rem 1.5rem;margin:.75rem 0;transition:all .2s;cursor:pointer;}
+.forum-post:hover{border-color:var(--border-gold);background:var(--surface2);}
+.post-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;flex-wrap:wrap;}
+.post-author-avatar{width:28px;height:28px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.65rem;color:var(--gold);flex-shrink:0;}
+.post-author-info{flex:1;}
+.post-author-name{font-size:.7rem;color:var(--text);letter-spacing:.05em;}
+.post-meta{font-size:.55rem;color:var(--text-muted);margin-top:.1rem;letter-spacing:.05em;}
+.post-rank-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.15rem .45rem;border-radius:2px;font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;margin-left:auto;}
+.rank-0{background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);}
+.rank-1{background:var(--surface2);border:1px solid var(--cyan-dim);color:var(--cyan);}
+.rank-2{background:var(--surface2);border:1px solid var(--gold-dim);color:var(--gold);}
+.rank-3{background:linear-gradient(135deg,var(--gold-dim),var(--violet-dim));border:1px solid var(--gold-dim);color:var(--gold-bright);}
+.post-title{font-family:var(--serif);font-size:1.05rem;font-weight:300;color:#e0ddd8;margin-bottom:.5rem;line-height:1.5;}
+.post-preview{font-size:.72rem;color:var(--text-dim);line-height:1.7;margin-bottom:.75rem;}
+.post-footer{display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap;}
+.post-stat{font-size:.6rem;color:var(--text-muted);display:flex;align-items:center;gap:.3rem;}
+.post-stat .icon{color:var(--text-dim);}
+.post-tag{font-size:.52rem;letter-spacing:.1em;padding:.15rem .45rem;border:1px solid var(--border);color:var(--text-muted);border-radius:2px;text-transform:uppercase;cursor:pointer;transition:all .1s;}
+.post-tag:hover{border-color:var(--green-dim);color:var(--green);}
+.post-tag.pinned{border-color:var(--gold-dim);color:var(--gold);}
+
+/* ═══════════════════════════════════════════
+   RANK HIERARCHY
+═══════════════════════════════════════════ */
+.rank-system{margin:2rem 0;}
+.rank-tier{background:var(--surface);border-left:3px solid;border-radius:0 4px 4px 0;padding:1.25rem 1.5rem;margin:.75rem 0;transition:all .2s;}
+.rank-tier:hover{background:var(--surface2);}
+.rank-tier.t0{border-color:var(--text-muted);}
+.rank-tier.t1{border-color:var(--cyan);}
+.rank-tier.t2{border-color:var(--gold);}
+.rank-tier.t3{border-color:var(--violet);}
+.rank-tier.t4{border-color:var(--amber);background:linear-gradient(135deg,var(--amber-dim),transparent);}
+.rank-tier-header{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem;flex-wrap:wrap;}
+.rank-tier-icon{font-size:1.2rem;}
+.rank-tier-name{font-family:var(--cinzel);font-size:1rem;color:#e8e8e8;letter-spacing:.05em;}
+.rank-tier-level{font-size:.58rem;letter-spacing:.2em;color:var(--text-muted);text-transform:uppercase;}
+.rank-perks{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem;}
+.rank-perk{font-size:.58rem;padding:.15rem .5rem;border:1px solid var(--border);color:var(--text-dim);border-radius:2px;}
+.rank-perk.active{border-color:var(--green-dim);color:var(--green);}
+.rank-progress{margin-top:.75rem;}
+.rank-progress-label{font-size:.55rem;color:var(--text-muted);margin-bottom:.3rem;letter-spacing:.1em;}
+.rank-bar{height:2px;background:var(--surface2);border-radius:1px;overflow:hidden;}
+.rank-fill{height:100%;border-radius:1px;transition:width .8s ease;}
+.fill-cyan{background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));}
+.fill-gold{background:linear-gradient(90deg,var(--gold-dim),var(--gold));}
+.fill-violet{background:linear-gradient(90deg,var(--violet-dim),var(--violet));}
+
+/* ═══════════════════════════════════════════
+   INCOME / MONETIZATION
+═══════════════════════════════════════════ */
+.income-schema{margin:2rem 0;}
+.income-node{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1.25rem 1.5rem;margin:.75rem 0;display:flex;gap:1.25rem;align-items:flex-start;transition:all .2s;}
+.income-node:hover{border-color:var(--gold-dim);background:var(--surface2);}
+.income-icon{font-size:1.5rem;flex-shrink:0;margin-top:.15rem;}
+.income-body{flex:1;}
+.income-title{font-family:var(--cinzel);font-size:.9rem;color:#e8e8e8;margin-bottom:.25rem;letter-spacing:.04em;}
+.income-desc{font-size:.68rem;color:var(--text-dim);line-height:1.7;margin-bottom:.5rem;}
+.income-how{font-size:.62rem;color:var(--gold);font-style:italic;}
+.income-how::before{content:'→ ';}
+.income-badge{font-size:.5rem;letter-spacing:.2em;padding:.15rem .5rem;border:1px solid var(--gold-dim);color:var(--gold);border-radius:2px;text-transform:uppercase;display:inline-block;margin-bottom:.5rem;}
+.schema-flow{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin:2rem 0;padding:1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:4px;}
+.flow-node{padding:.3rem .75rem;border:1px solid;border-radius:3px;font-size:.65rem;letter-spacing:.08em;white-space:nowrap;}
+.flow-node.green{border-color:var(--green-dim);color:var(--green);}
+.flow-node.gold{border-color:var(--gold-dim);color:var(--gold);}
+.flow-node.violet{border-color:var(--violet-dim);color:var(--violet);}
+.flow-node.cyan{border-color:var(--cyan-dim);color:var(--cyan);}
+.flow-node.amber{border-color:var(--amber-dim);color:var(--amber);}
+.flow-arrow{color:var(--text-muted);font-size:1rem;}
+
+/* ═══════════════════════════════════════════
+   CODE BLOCK
+═══════════════════════════════════════════ */
+.code-block{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1.25rem 1.5rem;margin:1.5rem 0;font-size:.78rem;line-height:1.8;overflow-x:auto;}
+.c-keyword{color:#c792ea}.c-string{color:var(--gold)}.c-comment{color:var(--text-muted);font-style:italic}
+.c-fn{color:var(--cyan)}.c-num{color:var(--green)}.c-type{color:#ff9d00}
+
+/* ═══════════════════════════════════════════
+   PORTFOLIO / TEMPLATE SYSTEM
+═══════════════════════════════════════════ */
+.portfolio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin:2rem 0;}
+.portfolio-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1.5rem;transition:all .25s;cursor:pointer;position:relative;overflow:hidden;}
+.portfolio-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent);transform:translateX(-100%);transition:transform .4s;}
+.portfolio-card:hover::before{transform:translateX(100%);}
+.portfolio-card:hover{border-color:var(--green-dim);background:var(--surface2);transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,255,136,.06);}
+.portfolio-icon{font-size:1.8rem;margin-bottom:.75rem;}
+.portfolio-name{font-family:var(--cinzel);font-size:.95rem;color:#e8e8e8;margin-bottom:.35rem;letter-spacing:.04em;}
+.portfolio-type{font-size:.55rem;letter-spacing:.25em;color:var(--green);text-transform:uppercase;margin-bottom:.5rem;}
+.portfolio-desc{font-size:.65rem;color:var(--text-dim);line-height:1.6;}
+.portfolio-footer{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--border);}
+.portfolio-lang{font-size:.58rem;color:var(--cyan);}
+.portfolio-stars{font-size:.58rem;color:var(--gold);}
+
+/* ═══════════════════════════════════════════
+   GLITCH
+═══════════════════════════════════════════ */
+.glitch{position:relative;display:inline-block;}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;}
+.glitch::before{color:var(--red);animation:glitch1 4s infinite;clip-path:polygon(0 0,100% 0,100% 35%,0 35%)}
+.glitch::after{color:var(--cyan);animation:glitch2 4s infinite;clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%)}
+@keyframes glitch1{0%,92%,100%{transform:none;opacity:0}93%{transform:skew(-2deg) translateX(-2px);opacity:.8}96%{transform:skew(1deg) translateX(1px);opacity:.6}}
+@keyframes glitch2{0%,89%,100%{transform:none;opacity:0}90%{transform:skew(2deg) translateX(2px);opacity:.7}94%{transform:skew(-1deg) translateX(-1px);opacity:.5}}
+
+/* ═══════════════════════════════════════════
+   TOAST / SCROLL
+═══════════════════════════════════════════ */
+#copyToast{position:fixed;bottom:5rem;right:2rem;z-index:500;padding:.5rem 1rem;background:var(--surface);border:1px solid var(--green-dim);color:var(--green);font-size:.65rem;letter-spacing:.1em;border-radius:4px;opacity:0;transition:opacity .3s;pointer-events:none;}
+#copyToast.show{opacity:1;}
+#scrollTop{position:fixed;bottom:2rem;right:2rem;z-index:100;width:40px;height:40px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--gold);font-size:1rem;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .2s;font-family:var(--cinzel);}
+#scrollTop:hover{background:var(--gold-dim);box-shadow:0 0 15px var(--gold-dim);}
+#scrollTop.visible{display:flex;}
+
+/* SCHEMA */
+.schema{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1.5rem;margin:2rem 0;font-size:.75rem;}
+.schema-title{color:var(--cyan);letter-spacing:.2em;font-size:.62rem;text-transform:uppercase;margin-bottom:1rem;}
+.schema-row{display:flex;align-items:center;gap:.75rem;margin:.4rem 0;flex-wrap:wrap;}
+.schema-node{padding:.3rem .7rem;border:1px solid;border-radius:3px;font-size:.7rem;white-space:nowrap;}
+.node-green{border-color:var(--green-dim);color:var(--green);}
+.node-gold{border-color:var(--gold-dim);color:var(--gold);}
+.node-cyan{border-color:var(--cyan-dim);color:var(--cyan);}
+.node-violet{border-color:var(--violet-dim);color:var(--violet);}
+.node-dim{border-color:var(--text-muted);color:var(--text-muted);}
+.schema-arrow{color:var(--text-muted);font-size:1rem;}
+.schema-label{color:var(--text-dim);font-size:.62rem;font-style:italic;}
+
+/* MODULE HEADER */
+.module-header{text-align:center;padding:3rem 0 2rem;margin-bottom:1rem;border-bottom:1px solid var(--border);}
+.mod-tag{font-size:.58rem;letter-spacing:.4em;color:var(--green);text-transform:uppercase;margin-bottom:.5rem;}
+.mod-title{font-family:var(--cinzel);font-size:1.8rem;font-weight:600;color:#e8e8e8;margin-top:.25rem;letter-spacing:.04em;}
+.mod-sub{font-size:.65rem;color:var(--text-dim);letter-spacing:.15em;margin-top:.5rem;}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     BOOT SCREEN
+════════════════════════════════════════ -->
+<div id="boot">
+  <div class="boot-atlas-glyph">ATLAS</div>
+  <div id="bootLines"></div>
+  <button id="bootEnter" onclick="enterWorld()">INGRESAR AL SISTEMA <span class="boot-cursor"></span></button>
+</div>
+
+<!-- ════════════════════════════════════════
+     MAIN APP
+════════════════════════════════════════ -->
+<div id="main">
+  <div id="readingProgress"><div id="readingBar"></div></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-atlas">ATLAS</div>
+      <div class="logo-sub">Foro-Portafolio Mundial<br>Tecnología · Finanzas · Sabiduría</div>
+    </div>
+
+    <div class="nav-section">// Inicio</div>
+    <a class="nav-item gold" onclick="goTo('cover')">⬡ Portada</a>
+    <a class="nav-item" onclick="goTo('about')">Sobre Diego Vera</a>
+
+    <div class="nav-section">// La Plataforma</div>
+    <a class="nav-item" onclick="goTo('vision')">Visión ATLAS</a>
+    <a class="nav-item" onclick="goTo('foro')">Foro Mundial</a>
+    <a class="nav-item" onclick="goTo('canales')">Canales Activos</a>
+
+    <div class="nav-section">// Economía</div>
+    <a class="nav-item" onclick="goTo('jerarquia')">Sistema de Rangos</a>
+    <a class="nav-item" onclick="goTo('ingresos')">Modelo de Ingresos</a>
+    <a class="nav-item" onclick="goTo('moderacion')">Moderación & Admin</a>
+
+    <div class="nav-section">// Portafolio</div>
+    <a class="nav-item" onclick="goTo('portafolio')">Open-Source</a>
+    <a class="nav-item" onclick="goTo('templanzas')">Templanzas</a>
+
+    <div class="nav-section">// Valoraciones</div>
+    <a class="nav-item" onclick="goTo('reviews')">Reseñas</a>
+
+    <div class="nav-section">// Sistema</div>
+    <a class="nav-item" onclick="goTo('codice')">Códice ATLAS</a>
+    <a class="nav-item" onclick="goTo('epilogo')">// cierre</a>
+
+    <div class="sidebar-spacer"></div>
+
+    <div class="sidebar-rank">
+      <div class="rank-label">tu rango actual</div>
+      <div class="rank-badge"><div class="rank-badge-icon"></div>OBSERVADOR</div>
+    </div>
+    <div class="nav-progress">
+      <div class="progress-label">exploración completada</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-pct" id="progressPct">0%</div>
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <main class="content" id="contentArea">
+
+    <!-- ════════════ PORTADA ════════════ -->
+    <section class="chapter" id="cover">
+      <div class="cover">
+        <div class="cover-eyebrow">Foro-Portafolio de Código Abierto · Edición Fundacional · 2026</div>
+        <div class="cover-sigil"><span class="glitch" data-text="ATLAS">ATLAS</span></div>
+        <div class="cover-title-row">El <em>Sistema</em> donde el conocimiento<br>genera realidad — y la realidad genera ingreso</div>
+        <div class="cover-subtitle">Tecnología · Finanzas · Sabiduría · Código Abierto</div>
+        <div class="cover-divider">[ INITIALIZING ATLAS_OS v1.0 · WORLD FORUM PROTOCOL ACTIVE ]</div>
+
+        <div class="terminal">
+          <div class="terminal-header">
+            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+            <span class="term-title">atlas_os.sh · SYSTEM BOOT · WORLD NODE ACTIVE</span>
+          </div>
+          <div class="terminal-body">
+            <div class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">sudo init atlas --mode=world_forum --protocol=open_source</span></div>
+            <span class="t-out">Montando nodos de tecnología... <span class="t-highlight">✓</span></span>
+            <span class="t-out">Activando circuito financiero... <span class="t-highlight">✓</span></span>
+            <span class="t-out">Cargando sabiduría metacuántica... <span class="t-highlight">✓</span></span>
+            <span class="t-out">Inicializando sistema de rangos... <span class="t-highlight">✓</span></span>
+            <span class="t-out">Compilando portafolio open-source... <span class="t-highlight">✓</span></span>
+            <span class="t-out t-warn">NOTA: esto no es un foro. No es una red social.</span>
+            <span class="t-out t-gold">SISTEMA: es un ecosistema donde tu conocimiento cotiza.</span>
+            <span class="t-out t-comment"># La popularidad aquí no es vanidad. Es economía.</span>
+            <span class="t-out t-comment"># La confidencia no es arrogancia. Es reputación verificada.</span>
+            <div class="t-line" style="margin-top:.5rem"><span class="t-prompt">$ </span><span class="t-cmd">echo $MISION_ATLAS</span></div>
+            <span class="t-out t-violet">construir sistemas, publicar conocimiento, ganar desde la sabiduría real</span>
+          </div>
+        </div>
+
+        <div class="prose">
+          ATLAS no es un lugar al que llegas.<br>
+          Es un sistema que <em>activas.</em><br>
+          Cada publicación que haces es un activo.<br>
+          Cada validación que recibes es <em>capital de reputación.</em><br>
+          Cada templanza que compartes es código que vive más allá de ti.
+        </div>
+
+        <div class="cover-cta-row">
+          <button class="btn-primary" onclick="goTo('foro')">INGRESAR AL FORO</button>
+          <button class="btn-ghost" onclick="goTo('portafolio')">VER PORTAFOLIO</button>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-item"><span class="stat-num">3</span><span class="stat-label">Nodos Activos</span></div>
+          <div class="stat-item"><span class="stat-num">∞</span><span class="stat-label">Templanzas</span></div>
+          <div class="stat-item"><span class="stat-num">5</span><span class="stat-label">Rangos</span></div>
+          <div class="stat-item"><span class="stat-num">0→</span><span class="stat-label">Ingresos Posibles</span></div>
+        </div>
+
+        <div class="cover-meta">
+          <span>Plataforma Open-Source</span>
+          <span>Sistema de Rangos & Moderación</span>
+          <span>Foro de Tecnología · Finanzas · Sabiduría</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ ABOUT ════════════ -->
+    <section class="chapter" id="about">
+      <div class="ch-number">// Genesis · Sobre el Arquitecto</div>
+      <div class="ch-title">Diego Vera</div>
+      <div class="ch-en">The mind behind ATLAS</div>
+
+      <div class="about-hero">
+        <div class="about-avatar">
+          <div class="about-avatar-ring"></div>
+        </div>
+        <div class="about-text-block">
+          <div class="about-name">Diego Vera</div>
+          <div class="about-title">Arquitecto de Sistemas · Escritor Metacuántico · Fundador</div>
+          <div class="about-bio">
+            Nací en Ciudad de México. Crecí en <em>Cabo San Lucas</em>, donde el océano enseña que toda frontera es una ilusión con fecha de caducidad. Durante años construí en silencio — negocios, sistemas, ideas, universos completos en texto y código. Hoy ATLAS es la síntesis de todo eso: no una red social, sino un <em>ecosistema vivo</em> donde el conocimiento genuino cotiza, y la sabiduría real tiene retorno.
+          </div>
+          <div class="about-tags">
+            <span class="about-tag gold">Teomoderna™</span>
+            <span class="about-tag gold">Metacuántico™</span>
+            <span class="about-tag">Entrepreneur</span>
+            <span class="about-tag">Open-Source</span>
+            <span class="about-tag">Web3</span>
+            <span class="about-tag">Los Cabos · BCS · MX</span>
+            <span class="about-tag">Quantum Philosophy</span>
+            <span class="about-tag">IA + Humanismo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-manifesto">
+        <div class="manifesto-line">
+          Soy el tipo de persona que construye <em>un sistema completo</em> antes de publicar la primera línea.<br>
+          Que escribe dos tomos sobre física cuántica y filosofía hermética <em>para publicarlos como NFT.</em><br>
+          Que diseña plataformas de IA, sistemas de trading, y retiros espirituales —<br>
+          y entiende que todo eso es la <strong>misma cosa</strong> vista desde ángulos distintos.<br><br>
+          ATLAS no es mi proyecto.<br>
+          ATLAS es mi <em>demostración.</em>
+        </div>
+      </div>
+
+      <div class="about-metrics">
+        <div class="metric-box"><span class="metric-num">2</span><span class="metric-label">Tomos publicados</span></div>
+        <div class="metric-box"><span class="metric-num">7+</span><span class="metric-label">Plataformas construidas</span></div>
+        <div class="metric-box"><span class="metric-num">∞</span><span class="metric-label">Sistemas activos</span></div>
+        <div class="metric-box"><span class="metric-num">1</span><span class="metric-label">Misión central</span></div>
+      </div>
+
+      <div class="axiom">
+        <div class="axiom-text">No construyo para que me vean construir. Construyo porque la construcción misma es la prueba de que el universo responde a quien entiende su lenguaje.</div>
+        <div class="axiom-en">I don't build to be seen building. I build because the act of building is proof that the universe responds to those who understand its language.</div>
+      </div>
+
+      <div class="prose">
+        Mis obras viven en la intersección de lo que el mundo académico separa:<br>
+        <em>física cuántica y hermetismo,</em><br>
+        <em>código y poesía,</em><br>
+        <em>tecnología y consciencia.</em><br><br>
+        Llamo a esa intersección <strong>teomoderna</strong> —<br>
+        la síntesis de lo divino y lo digital en un solo lenguaje operativo.
+      </div>
+    </section>
+
+    <!-- ════════════ VISIÓN ════════════ -->
+    <section class="chapter" id="vision">
+      <div class="ch-number">// Núcleo · Arquitectura del Sistema</div>
+      <div class="ch-title">Visión ATLAS</div>
+      <div class="ch-en">What this system actually is</div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+          <span class="term-title">vision.md · ATLAS CORE ARCHITECTURE</span>
+        </div>
+        <div class="terminal-body">
+          <div class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">cat /atlas/README.md</span></div>
+          <span class="t-out t-comment"># ATLAS — Foro-Portafolio de Código Abierto</span>
+          <span class="t-out"></span>
+          <span class="t-out"><span class="t-highlight">¿Qué es ATLAS?</span></span>
+          <span class="t-out">→ Un foro mundial con jerarquía de confianza verificada</span>
+          <span class="t-out">→ Un portafolio colectivo de sistemas y templanzas open-source</span>
+          <span class="t-out">→ Un ecosistema donde la popularidad y la confidencia generan ingreso real</span>
+          <span class="t-out"></span>
+          <span class="t-out"><span class="t-gold">¿Qué no es ATLAS?</span></span>
+          <span class="t-out t-comment">→ NO es Twitter con otro nombre</span>
+          <span class="t-out t-comment">→ NO es un curso de YouTube disfrazado</span>
+          <span class="t-out t-comment">→ NO premia la viralidad vacía</span>
+          <span class="t-out"></span>
+          <span class="t-out"><span class="t-violet">ATLAS premia: conocimiento verificable + consistencia + impacto real</span></span>
+        </div>
+      </div>
+
+      <div class="schema">
+        <div class="schema-title">// arquitectura de tres nodos</div>
+        <div class="schema-row">
+          <div class="schema-node node-cyan">⚙ TECNOLOGÍA</div>
+          <div class="schema-arrow">⊕</div>
+          <div class="schema-node node-gold">◈ FINANZAS</div>
+          <div class="schema-arrow">⊕</div>
+          <div class="schema-node node-violet">✦ SABIDURÍA</div>
+          <div class="schema-arrow">→</div>
+          <div class="schema-node node-green">ATLAS</div>
+        </div>
+        <div class="schema-row" style="margin-top:.75rem;">
+          <div class="schema-node node-dim">publicación</div>
+          <div class="schema-arrow">→</div>
+          <div class="schema-node node-dim">validación</div>
+          <div class="schema-arrow">→</div>
+          <div class="schema-node node-dim">rango</div>
+          <div class="schema-arrow">→</div>
+          <div class="schema-node node-dim">ingreso</div>
+          <div class="schema-label">el loop económico del creador</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        ATLAS funciona sobre un principio hermético simple:<br>
+        <em>como es arriba, es abajo.</em><br><br>
+        Lo que sucede en la red (publicaciones, validaciones, reputación)<br>
+        se refleja en el mundo físico como <em>ingreso, oportunidades, y autoridad.</em><br><br>
+        No hay separación entre el creador digital y el ser en el mundo.<br>
+        <strong>ATLAS los unifica.</strong>
+      </div>
+    </section>
+
+    <!-- ════════════ FORO ════════════ -->
+    <section class="chapter" id="foro">
+      <div class="module-header">
+        <div class="mod-tag">Módulo I · Foro</div>
+        <div class="mod-title">El Foro Mundial</div>
+        <div class="mod-sub">Conversaciones que construyen sistemas · no que los consumen</div>
+      </div>
+
+      <div class="forum-header">
+        <div class="forum-title-block">
+          <div class="forum-label">// foro activo</div>
+          <div class="forum-name">ATLAS World Forum</div>
+        </div>
+        <div class="forum-tabs">
+          <div class="forum-tab active">Recientes</div>
+          <div class="forum-tab">Trending</div>
+          <div class="forum-tab">Élite</div>
+          <div class="forum-tab">Open-Source</div>
+        </div>
+      </div>
+
+      <!-- POSTS SIMULADOS -->
+      <div class="forum-post">
+        <div class="post-header">
+          <div class="post-author-avatar">DV</div>
+          <div class="post-author-info">
+            <div class="post-author-name">Diego Vera</div>
+            <div class="post-meta">hace 2 horas · Nodo: Tecnología</div>
+          </div>
+          <div class="post-rank-badge rank-3">⬡ ARQUITECTO</div>
+        </div>
+        <div class="post-title">ATLAS OS v1.0 — El portafolio como sistema económico vivo</div>
+        <div class="post-preview">Un portafolio no es una colección de trabajos pasados. Es un activo en tiempo real. Si nadie puede ver el proceso, el proceso no cotiza. Este post explica cómo convertir cada sistema que construyes en un generador de confianza compuesta...</div>
+        <div class="post-footer">
+          <span class="post-stat"><span class="icon">▲</span> 247 puntos</span>
+          <span class="post-stat"><span class="icon">◉</span> 34 respuestas</span>
+          <span class="post-stat"><span class="icon">⬡</span> 1.2k vistas</span>
+          <span class="post-tag pinned">ANCLADO</span>
+          <span class="post-tag">open-source</span>
+          <span class="post-tag">sistemas</span>
+        </div>
+      </div>
+
+      <div class="forum-post">
+        <div class="post-header">
+          <div class="post-author-avatar">AK</div>
+          <div class="post-author-info">
+            <div class="post-author-name">Aya Kimura</div>
+            <div class="post-meta">hace 6 horas · Nodo: Finanzas</div>
+          </div>
+          <div class="post-rank-badge rank-2">◈ ESTRATEGA</div>
+        </div>
+        <div class="post-title">DeFi + Física Cuántica: por qué los mercados se comportan como sistemas no-lineales</div>
+        <div class="post-preview">La física clásica modela el precio como función del tiempo. Pero si tratas el mercado como un sistema cuántico con múltiples estados superpuestos de intención colectiva, el análisis técnico toma otra dimensión...</div>
+        <div class="post-footer">
+          <span class="post-stat"><span class="icon">▲</span> 189 puntos</span>
+          <span class="post-stat"><span class="icon">◉</span> 21 respuestas</span>
+          <span class="post-stat"><span class="icon">⬡</span> 876 vistas</span>
+          <span class="post-tag">finanzas</span>
+          <span class="post-tag">quantum</span>
+          <span class="post-tag">DeFi</span>
+        </div>
+      </div>
+
+      <div class="forum-post">
+        <div class="post-header">
+          <div class="post-author-avatar">SR</div>
+          <div class="post-author-info">
+            <div class="post-author-name">Sebastián Rocha</div>
+            <div class="post-meta">hace 1 día · Nodo: Sabiduría</div>
+          </div>
+          <div class="post-rank-badge rank-1">✦ INICIADO</div>
+        </div>
+        <div class="post-title">[TEMPLANZA] Sistema de pomodoro metacuántico — fork y mejoras</div>
+        <div class="post-preview">Forkeé la templanza original de gestión de tiempo de ATLAS y agregué un módulo de intención antes de cada ciclo. Resultado: 40% más de tareas completadas en dos semanas. Comparto el código completo y la metodología...</div>
+        <div class="post-footer">
+          <span class="post-stat"><span class="icon">▲</span> 94 puntos</span>
+          <span class="post-stat"><span class="icon">◉</span> 8 respuestas</span>
+          <span class="post-stat"><span class="icon">⬡</span> 412 vistas</span>
+          <span class="post-tag">templanza</span>
+          <span class="post-tag">open-source</span>
+          <span class="post-tag">productividad</span>
+        </div>
+      </div>
+
+      <div class="section-div">· · · [ CARGANDO MÁS PUBLICACIONES ] · · ·</div>
+    </section>
+
+    <!-- ════════════ CANALES ════════════ -->
+    <section class="chapter" id="canales">
+      <div class="ch-number">// Nodos · Canales Activos</div>
+      <div class="ch-title">Los Tres Nodos</div>
+      <div class="ch-en">The world's three frequencies</div>
+
+      <div class="prose">
+        ATLAS opera sobre tres frecuencias fundamentales.<br>
+        No son categorías. Son <em>naturalezas.</em><br>
+        Cada publicador elige su nodo primario,<br>
+        pero los mejores creadores orbitan <em>los tres.</em>
+      </div>
+
+      <div class="forum-channels">
+        <div class="channel-card tech">
+          <div class="channel-icon">⚙</div>
+          <div class="channel-name">Tecnología</div>
+          <div class="channel-desc">IA, desarrollo de software, sistemas web3, automatización, código open-source y arquitecturas del futuro.</div>
+          <div class="channel-count live">● LIVE</div>
+        </div>
+        <div class="channel-card finance">
+          <div class="channel-icon">◈</div>
+          <div class="channel-name">Finanzas</div>
+          <div class="channel-desc">Cripto, trading cuántico, DeFi, análisis de mercados, libertad financiera y economía descentralizada.</div>
+          <div class="channel-count live">● LIVE</div>
+        </div>
+        <div class="channel-card wisdom">
+          <div class="channel-icon">✦</div>
+          <div class="channel-name">Sabiduría</div>
+          <div class="channel-desc">Filosofía teomoderna, consciencia cuántica, hermetismo aplicado, metacognición y sistemas de pensamiento.</div>
+          <div class="channel-count live">● LIVE</div>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+          <span class="term-title">channels.sh · NODO STATUS · TIEMPO REAL</span>
+        </div>
+        <div class="terminal-body">
+          <div class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">atlas status --all-nodes</span></div>
+          <span class="t-out"><span class="t-highlight">[TECH]</span>     · 1,247 publicaciones · 89 activos hoy · popularidad: ▲▲▲▲▲</span>
+          <span class="t-out"><span class="t-gold">[FINANCE]</span>  · 934 publicaciones · 67 activos hoy · popularidad: ▲▲▲▲</span>
+          <span class="t-out"><span class="t-violet">[WISDOM]</span>   · 612 publicaciones · 44 activos hoy · popularidad: ▲▲▲</span>
+          <span class="t-out t-comment"># Las publicaciones cross-nodo reciben multiplicador de reputación x1.5</span>
+          <span class="t-out t-comment"># ATLAS recompensa a quienes saben hablar los tres idiomas.</span>
+        </div>
+      </div>
+
+      <div class="axiom">
+        <div class="axiom-text">El creador que domina los tres nodos no es un generalista. Es un traductor universal — el ser más valioso en cualquier ecosistema.</div>
+        <div class="axiom-en">The creator who masters all three nodes is not a generalist. They are a universal translator — the most valuable being in any ecosystem.</div>
+      </div>
+    </section>
+
+    <!-- ════════════ JERARQUÍA ════════════ -->
+    <section class="chapter" id="jerarquia">
+      <div class="module-header">
+        <div class="mod-tag">Módulo II · Sistema</div>
+        <div class="mod-title">Sistema de Rangos</div>
+        <div class="mod-sub">Tu nivel se gana · nunca se compra</div>
+      </div>
+
+      <div class="prose">
+        Los rangos de ATLAS no son decorativos.<br>
+        Son <em>niveles de acceso, autoridad y ingreso.</em><br>
+        Cada rango abre canales, capacidades y flujos económicos<br>
+        que el nivel anterior <em>no puede ver.</em>
+      </div>
+
+      <div class="rank-system">
+        <div class="rank-tier t0">
+          <div class="rank-tier-header">
+            <div class="rank-tier-icon">◌</div>
+            <div>
+              <div class="rank-tier-name">Observador</div>
+              <div class="rank-tier-level">Rango 0 · Entrada al Sistema</div>
+            </div>
+          </div>
+          <div class="rank-perks">
+            <div class="rank-perk active">Leer todos los posts</div>
+            <div class="rank-perk active">Acceso a templanzas públicas</div>
+            <div class="rank-perk active">Forkear proyectos</div>
+          </div>
+          <div class="rank-progress"><div class="rank-progress-label">0 → 50 puntos de contribución</div><div class="rank-bar"><div class="rank-fill fill-cyan" style="width:0%"></div></div></div>
+        </div>
+
+        <div class="rank-tier t1">
+          <div class="rank-tier-header">
+            <div class="rank-tier-icon">◉</div>
+            <div>
+              <div class="rank-tier-name">Iniciado</div>
+              <div class="rank-tier-level">Rango 1 · Primer Ciclo de Confianza</div>
+            </div>
+          </div>
+          <div class="rank-perks">
+            <div class="rank-perk active">Publicar en el Foro</div>
+            <div class="rank-perk active">Comentar y votar</div>
+            <div class="rank-perk active">Proponer templanzas</div>
+            <div class="rank-perk">Ingresos básicos por popularidad</div>
+          </div>
+          <div class="rank-progress"><div class="rank-progress-label">50 → 500 puntos · 10 publicaciones aprobadas</div><div class="rank-bar"><div class="rank-fill fill-cyan" style="width:35%"></div></div></div>
+        </div>
+
+        <div class="rank-tier t2">
+          <div class="rank-tier-header">
+            <div class="rank-tier-icon">◈</div>
+            <div>
+              <div class="rank-tier-name">Estratega</div>
+              <div class="rank-tier-level">Rango 2 · Autoridad Técnica</div>
+            </div>
+          </div>
+          <div class="rank-perks">
+            <div class="rank-perk active">Canal propio en el Foro</div>
+            <div class="rank-perk active">Co-moderación de nodo</div>
+            <div class="rank-perk active">Ingresos por suscriptores</div>
+            <div class="rank-perk active">Publicar templanzas premium</div>
+            <div class="rank-perk">Acceso a DAO de decisiones</div>
+          </div>
+          <div class="rank-progress"><div class="rank-progress-label">500 → 2,500 puntos · reputación verificada</div><div class="rank-bar"><div class="rank-fill fill-gold" style="width:22%"></div></div></div>
+        </div>
+
+        <div class="rank-tier t3">
+          <div class="rank-tier-header">
+            <div class="rank-tier-icon">⬡</div>
+            <div>
+              <div class="rank-tier-name">Arquitecto</div>
+              <div class="rank-tier-level">Rango 3 · Constructor del Sistema</div>
+            </div>
+          </div>
+          <div class="rank-perks">
+            <div class="rank-perk active">Voto en gobernanza ATLAS</div>
+            <div class="rank-perk active">Mentoría remunerada</div>
+            <div class="rank-perk active">Revenue-share en templanzas</div>
+            <div class="rank-perk active">Insignia verificada global</div>
+            <div class="rank-perk active">Acceso completo a moderación</div>
+          </div>
+          <div class="rank-progress"><div class="rank-progress-label">2,500 → 10,000 puntos · proyectos fork activos</div><div class="rank-bar"><div class="rank-fill fill-violet" style="width:8%"></div></div></div>
+        </div>
+
+        <div class="rank-tier t4">
+          <div class="rank-tier-header">
+            <div class="rank-tier-icon">✦</div>
+            <div>
+              <div class="rank-tier-name">Oráculo</div>
+              <div class="rank-tier-level">Rango 4 · Nodo Fundacional · Invitación</div>
+            </div>
+          </div>
+          <div class="rank-perks">
+            <div class="rank-perk active">Rol fundacional en la plataforma</div>
+            <div class="rank-perk active">Participación en token ATLAS</div>
+            <div class="rank-perk active">Co-creación del protocolo</div>
+            <div class="rank-perk active">Royalties de sistema</div>
+          </div>
+          <div class="rank-progress"><div class="rank-progress-label">10,000+ puntos · historial de impacto documentado</div><div class="rank-bar"><div class="rank-fill fill-gold" style="width:2%"></div></div></div>
+        </div>
+      </div>
+
+      <div class="code-block">
+<span class="c-comment">// rank_engine.js · ATLAS reputation system</span>
+
+<span class="c-keyword">class</span> <span class="c-type">ReputationEngine</span> {
+  <span class="c-fn">calculatePoints</span>(action) {
+    <span class="c-keyword">const</span> weights = {
+      post_upvoted:     <span class="c-num">10</span>,    <span class="c-comment">// cada voto recibido</span>
+      post_forked:      <span class="c-num">25</span>,    <span class="c-comment">// alguien usa tu sistema</span>
+      comment_valuable: <span class="c-num">5</span>,     <span class="c-comment">// comentario con upvotes</span>
+      template_adopted: <span class="c-num">50</span>,    <span class="c-comment">// templanza adoptada</span>
+      cross_node:       <span class="c-num">1.5</span>,   <span class="c-comment">// multiplicador cross-nodo</span>
+      mentor_session:   <span class="c-num">100</span>,   <span class="c-comment">// mentoría completada</span>
+    };
+    <span class="c-keyword">return</span> weights[action.type] * (action.cross_node ? weights.cross_node : <span class="c-num">1</span>);
+  }
+
+  <span class="c-fn">generateIncome</span>(user) {
+    <span class="c-comment">// La reputación es capital. El capital genera flujo.</span>
+    <span class="c-keyword">return</span> user.reputation * user.rank_multiplier * platform.revenue_share;
+  }
+}
+</div>
+    </section>
+
+    <!-- ════════════ INGRESOS ════════════ -->
+    <section class="chapter" id="ingresos">
+      <div class="ch-number">// Economía · Modelo de Ingresos</div>
+      <div class="ch-title">Cómo Genera ATLAS</div>
+      <div class="ch-en">Where the value actually flows</div>
+
+      <div class="prose">
+        ATLAS no paga por existir.<br>
+        Paga por <em>impactar.</em><br>
+        La diferencia es la distinción más importante<br>
+        entre una red social y un <em>ecosistema económico.</em>
+      </div>
+
+      <div class="schema-flow">
+        <div class="flow-node green">PUBLICACIÓN</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node cyan">VALIDACIÓN</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node gold">REPUTACIÓN</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node violet">RANGO</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node amber">INGRESO</div>
+      </div>
+
+      <div class="income-schema">
+        <div class="income-node">
+          <div class="income-icon">▲</div>
+          <div class="income-body">
+            <div class="income-badge">INICIADO → ORÁCULO</div>
+            <div class="income-title">Revenue por Popularidad</div>
+            <div class="income-desc">Cada publicación que recibe votos, comentarios y vistas genera puntos de reputación. A partir del Rango 1, estos puntos se traducen en participación del revenue mensual de la plataforma, distribuido proporcionalmente según el peso de reputación de cada publicador activo.</div>
+            <div class="income-how">más validación genuina = mayor proporción del pool mensual</div>
+          </div>
+        </div>
+
+        <div class="income-node">
+          <div class="income-icon">◈</div>
+          <div class="income-body">
+            <div class="income-badge">ESTRATEGA → ORÁCULO</div>
+            <div class="income-title">Templanzas Premium</div>
+            <div class="income-desc">Los Estrategas y superiores pueden publicar templanzas con precio. Cada fork, descarga o uso de tu sistema genera ingreso directo. ATLAS toma un 15% de comisión; el 85% va al creador. Las templanzas de mayor adopción escalan en visibilidad automáticamente.</div>
+            <div class="income-how">tu sistema trabajando mientras tú duermes</div>
+          </div>
+        </div>
+
+        <div class="income-node">
+          <div class="income-icon">✦</div>
+          <div class="income-body">
+            <div class="income-badge">ARQUITECTO → ORÁCULO</div>
+            <div class="income-title">Mentoría y Consultoría</div>
+            <div class="income-desc">Los Arquitectos pueden ofrecer sesiones de mentoría pagadas directamente desde el perfil. La plataforma verifica la reputación y actúa como intermediaria de confianza. La tarifa la fija el Arquitecto; ATLAS toma 10% por la garantía de calidad.</div>
+            <div class="income-how">tu tiempo tiene precio porque tu reputación lo respaldó primero</div>
+          </div>
+        </div>
+
+        <div class="income-node">
+          <div class="income-icon">⬡</div>
+          <div class="income-body">
+            <div class="income-badge">ORÁCULO · EXCLUSIVO</div>
+            <div class="income-title">Token ATLAS & Royalties</div>
+            <div class="income-desc">Los Oráculos participan en la gobernanza del token ATLAS — un activo de utilidad que captura el valor del ecosistema. Reciben royalties perpetuos por las templanzas que introdujeron al sistema, incluso cuando otros las usan y mejoran.</div>
+            <div class="income-how">el conocimiento que compartes hoy cotiza para siempre en el protocolo</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="axiom">
+        <div class="axiom-text">La confidencia no es un rasgo de carácter. En ATLAS es una métrica económica. Quien más confianza acumula, más flujo recibe. El sistema nunca miente sobre el valor real de lo que publicas.</div>
+        <div class="axiom-en">Confidence is not a personality trait. In ATLAS it is an economic metric. Whoever accumulates the most trust receives the most flow. The system never lies about the real value of what you publish.</div>
+      </div>
+    </section>
+
+    <!-- ════════════ MODERACIÓN ════════════ -->
+    <section class="chapter" id="moderacion">
+      <div class="ch-number">// Protocolo · Gobernanza del Sistema</div>
+      <div class="ch-title">Moderación & Admin</div>
+      <div class="ch-en">How the system governs itself</div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+          <span class="term-title">governance.sh · ATLAS MODERATION PROTOCOL</span>
+        </div>
+        <div class="terminal-body">
+          <div class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">cat /atlas/governance/README.md</span></div>
+          <span class="t-out t-comment"># PRINCIPIO: nadie modera solo. El sistema modera con todos.</span>
+          <span class="t-out"></span>
+          <span class="t-out"><span class="t-highlight">NIVEL 1 · INICIADOS</span></span>
+          <span class="t-out">→ Votar en publicaciones · reportar spam · flagear contenido</span>
+          <span class="t-out"></span>
+          <span class="t-out"><span class="t-gold">NIVEL 2 · ESTRATEGAS</span></span>
+          <span class="t-out">→ Co-moderar su nodo primario · aprobar templanzas · remover spam</span>
+          <span class="t-out"></span>
+          <span class="t-out"><span class="t-violet">NIVEL 3 · ARQUITECTOS</span></span>
+          <span class="t-out">→ Moderación global · suspensión temporal · propuestas de protocolo</span>
+          <span class="t-out"></span>
+          <span class="t-out t-highlight">NIVEL 4 · ORÁCULOS</span>
+          <span class="t-out">→ Voto en gobernanza DAO · actualizaciones del protocolo · decisiones fundacionales</span>
+          <span class="t-out t-comment"># Las decisiones importantes requieren consenso de múltiples Arquitectos.</span>
+          <span class="t-out t-comment"># Ningún Oráculo puede vetar sin argumentación pública verificable.</span>
+        </div>
+      </div>
+
+      <div class="prose">
+        La moderación en ATLAS no es censura.<br>
+        Es <em>curaduría de calidad.</em><br><br>
+        El único contenido que ATLAS rechaza:<br>
+        lo que no puede ser verificado, replicado o mejorado por otros.<br>
+        <strong>La mediocridad no es pecado — es simplemente invisible al sistema.</strong>
+      </div>
+    </section>
+
+    <!-- ════════════ PORTAFOLIO ════════════ -->
+    <section class="chapter" id="portafolio">
+      <div class="module-header">
+        <div class="mod-tag">Módulo III · Portafolio</div>
+        <div class="mod-title">Código Abierto</div>
+        <div class="mod-sub">Sistemas construidos · disponibles para forkear · listos para evolucionar</div>
+      </div>
+
+      <div class="prose">
+        El código abierto no es generosidad.<br>
+        Es la demostración más contundente de dominio:<br>
+        <em>mostrar cómo piensas en público</em><br>
+        y confiar en que nadie puede replicar exactamente<br>
+        <strong>la mente que lo generó.</strong>
+      </div>
+
+      <div class="portfolio-grid">
+        <div class="portfolio-card">
+          <div class="portfolio-icon">📈</div>
+          <div class="portfolio-name">OpenChart</div>
+          <div class="portfolio-type">Trading · TradingView Clone</div>
+          <div class="portfolio-desc">Motor de gráficas candlestick con indicadores técnicos, herramientas de dibujo y landing page. Estilo TradingView, código abierto completo.</div>
+          <div class="portfolio-footer">
+            <span class="portfolio-lang">HTML · JS · Canvas</span>
+            <span class="portfolio-stars">★ 4.9</span>
+          </div>
+        </div>
+        <div class="portfolio-card">
+          <div class="portfolio-icon">🧠</div>
+          <div class="portfolio-name">NEXUS Academy</div>
+          <div class="portfolio-type">Educación · Plataforma Digital</div>
+          <div class="portfolio-desc">Academia digital en español. Ciberseguridad, desarrollo, trading, cripto, IA. Con chatbot AURORA integrado via Anthropic API.</div>
+          <div class="portfolio-footer">
+            <span class="portfolio-lang">HTML · API Anthropic</span>
+            <span class="portfolio-stars">★ 4.8</span>
+          </div>
+        </div>
+        <div class="portfolio-card">
+          <div class="portfolio-icon">⚗️</div>
+          <div class="portfolio-name">Synth World</div>
+          <div class="portfolio-type">Libro · Códice Digital</div>
+          <div class="portfolio-desc">Códice digital sobre el ego como arquitecto de realidad. Estética terminal, filosofía aplicada, edición NFT en Base L2.</div>
+          <div class="portfolio-footer">
+            <span class="portfolio-lang">HTML · Codex · NFT</span>
+            <span class="portfolio-stars">★ 5.0</span>
+          </div>
+        </div>
+        <div class="portfolio-card">
+          <div class="portfolio-icon">📚</div>
+          <div class="portfolio-name">Biblioteca Metacuántica</div>
+          <div class="portfolio-type">Sistema · Arsenal Cognitivo</div>
+          <div class="portfolio-desc">100 prompts, 15 mapas, 10 frameworks filosóficos, 25 generadores infinitos. Sistema operativo para mentes visionarias.</div>
+          <div class="portfolio-footer">
+            <span class="portfolio-lang">HTML · Sistema</span>
+            <span class="portfolio-stars">★ 4.9</span>
+          </div>
+        </div>
+        <div class="portfolio-card">
+          <div class="portfolio-icon">🔮</div>
+          <div class="portfolio-name">ENCHANTED AI</div>
+          <div class="portfolio-type">IA · App Standalone</div>
+          <div class="portfolio-desc">App de IA con cuatro modos: Oráculo, Análisis, Creación, Código. Diseñada para competir con ChatGPT en el espacio metacuántico.</div>
+          <div class="portfolio-footer">
+            <span class="portfolio-lang">HTML · Anthropic API</span>
+            <span class="portfolio-stars">★ 4.7</span>
+          </div>
+        </div>
+        <div class="portfolio-card">
+          <div class="portfolio-icon">🌐</div>
+          <div class="portfolio-name">Aurora CRM</div>
+          <div class="portfolio-type">CRM · Real Estate</div>
+          <div class="portfolio-desc">Sistema CRM para ventas de bienes raíces en Los Cabos. Gestión de prospectos, seguimiento y pipeline visual integrado.</div>
+          <div class="portfolio-footer">
+            <span class="portfolio-lang">HTML · Vanilla JS</span>
+            <span class="portfolio-stars">★ 4.6</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ TEMPLANZAS ════════════ -->
+    <section class="chapter" id="templanzas">
+      <div class="ch-number">// Módulo IV · Templanzas</div>
+      <div class="ch-title">El Sistema de Templanzas</div>
+      <div class="ch-en">Living templates that evolve with each fork</div>
+
+      <div class="prose">
+        Una templanza no es un template.<br>
+        Un template es un molde.<br>
+        Una templanza es un <em>organismo vivo</em> —<br>
+        diseñada para ser forkeada, mejorada, y devuelta al sistema<br>
+        con más inteligencia de la que tenía al nacer.
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+          <span class="term-title">templanza.sh · SYSTEM DEFINITIONS</span>
+        </div>
+        <div class="terminal-body">
+          <div class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">atlas list --type=templanza --sort=adoption</span></div>
+          <span class="t-out"></span>
+          <span class="t-out"><span class="t-highlight">TEMPLANZA-001</span>  · Sistema de Decisiones Cuánticas</span>
+          <span class="t-out t-comment">                   forks: 34 · adopción: alta · rango_min: INICIADO</span>
+          <span class="t-out"></span>
+          <span class="t-out"><span class="t-highlight">TEMPLANZA-007</span>  · Framework de Pitch para Sistemas IA</span>
+          <span class="t-out t-comment">                   forks: 21 · adopción: media · rango_min: ESTRATEGA</span>
+          <span class="t-out"></span>
+          <span class="t-out"><span class="t-highlight">TEMPLANZA-013</span>  · Arquitectura de Portafolio Filosófico</span>
+          <span class="t-out t-comment">                   forks: 67 · adopción: muy alta · rango_min: INICIADO</span>
+          <span class="t-out"></span>
+          <span class="t-out"><span class="t-gold">TEMPLANZA-021</span>  · [PREMIUM] Sistema de Trading Metacuántico</span>
+          <span class="t-out t-comment">                   forks: 12 · adopción: alta · rango_min: ESTRATEGA · precio: 49 USD</span>
+          <span class="t-out"></span>
+          <span class="t-out t-comment"># Cada fork registra al creador original. La cadena de crédito nunca se rompe.</span>
+        </div>
+      </div>
+
+      <div class="axiom">
+        <div class="axiom-text">Hacer un fork de una templanza no es copiar. Es la forma más alta de respeto en ATLAS: significa que alguien encontró tu sistema lo suficientemente sólido como para construir sobre él.</div>
+        <div class="axiom-en">Forking a template is not copying. It is the highest form of respect in ATLAS: it means someone found your system solid enough to build upon.</div>
+      </div>
+    </section>
+
+    <!-- ════════════ REVIEWS ════════════ -->
+    <section class="chapter" id="reviews">
+      <div class="ch-number">// Validación · Reseñas del Sistema</div>
+      <div class="ch-title">Lo que dicen los que operan</div>
+      <div class="ch-en">Not testimonials. Verified impact records.</div>
+
+      <div class="review-grid">
+        <div class="review-card">
+          <div class="review-badge">VERIFICADO ✓</div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">ATLAS es la única plataforma donde siento que mi conocimiento cotiza de verdad. Publiqué una templanza de arquitectura DeFi hace dos meses. Ya tiene 23 forks y me generó mi primer ingreso pasivo real desde el conocimiento, no desde el trabajo por horas.</div>
+          <div class="review-author">
+            <div class="review-avatar">AK</div>
+            <div>
+              <div class="review-name">Aya Kimura</div>
+              <div class="review-role">Estratega · Nodo Finanzas · 847 pts</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="review-badge">VERIFICADO ✓</div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">Llegué aquí buscando un foro de tecnología y encontré un ecosistema completo. El sistema de rangos es el más honesto que he visto: no hay atajos. O aportas valor real o el sistema no te ve. Eso, paradójicamente, es lo que le da valor a ser visto aquí.</div>
+          <div class="review-author">
+            <div class="review-avatar">MR</div>
+            <div>
+              <div class="review-name">Marco Reyes</div>
+              <div class="review-role">Iniciado → Estratega · Nodo Tecnología · 512 pts</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="review-badge">VERIFICADO ✓</div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">La filosofía detrás de ATLAS es lo que me convenció. No es "publica contenido y espera que el algoritmo te favore". Es: construye algo real, compártelo con integridad, y el sistema reconoce el valor genuino. Es la primera plataforma que alinea mis valores con mi economía.</div>
+          <div class="review-author">
+            <div class="review-avatar">LC</div>
+            <div>
+              <div class="review-name">Luna Castillo</div>
+              <div class="review-role">Estratega · Nodo Sabiduría · 1,203 pts</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="review-badge">VERIFICADO ✓</div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">Fui Arquitecto en dos comunidades crypto antes de ATLAS. Nada se compara. Aquí la moderación es descentralizada pero no caótica — hay estructura real con valores reales. Y el revenue-share con mis templanzas es transparente al 100%. Puedo ver cada fork y su impacto en tiempo real.</div>
+          <div class="review-author">
+            <div class="review-avatar">KP</div>
+            <div>
+              <div class="review-name">Kai Patel</div>
+              <div class="review-role">Arquitecto · Multi-nodo · 3,891 pts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ CÓDICE ════════════ -->
+    <section class="chapter" id="codice">
+      <div class="ch-number">// Fundamento · El Alma del Sistema</div>
+      <div class="ch-title">Códice ATLAS</div>
+      <div class="ch-en">The axioms that govern this world</div>
+
+      <div class="prose">
+        Un sistema sin código ético es solo una herramienta.<br>
+        ATLAS es un ecosistema — y todo ecosistema<br>
+        tiene <em>leyes que lo mantienen vivo.</em>
+      </div>
+
+      <div class="axiom">
+        <div class="axiom-text">I. El conocimiento que no se comparte no existe para el sistema. Existes en ATLAS en la medida en que tu sabiduría puede ser usada por otros.</div>
+      </div>
+      <div class="axiom">
+        <div class="axiom-text">II. La popularidad sin substancia decae. La confidencia sin visibilidad no escala. ATLAS premia la intersección: substancia que es visible.</div>
+      </div>
+      <div class="axiom">
+        <div class="axiom-text">III. Forkear es el acto más creativo del sistema. No clona lo que otros hicieron — evoluciona lo que todos iniciaron.</div>
+      </div>
+      <div class="axiom">
+        <div class="axiom-text">IV. La moderación es la memoria del sistema. Quien cuida la calidad de lo que entra, decide la calidad de lo que ATLAS puede llegar a ser.</div>
+      </div>
+      <div class="axiom">
+        <div class="axiom-text">V. El ingreso en ATLAS no recompensa el tiempo. Recompensa el impacto. Un sistema que usas diez minutos y vive años es más valioso que mil horas de trabajo sin forma.</div>
+      </div>
+    </section>
+
+    <!-- ════════════ EPÍLOGO ════════════ -->
+    <section class="chapter" id="epilogo">
+      <div class="ch-number">// Cierre del Sistema · Epílogo</div>
+      <div class="ch-title">Shutdown Sequence</div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+          <span class="term-title">epilogue.sh · ATLAS CLOSING SEQUENCE</span>
+        </div>
+        <div class="terminal-body">
+          <div class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">sudo commit --user=world --mode=genesis --save-state</span></div>
+          <span class="t-out">Guardando primeras templanzas... <span class="t-highlight">✓</span></span>
+          <span class="t-out">Guardando nodos fundacionales... <span class="t-highlight">✓</span></span>
+          <span class="t-out">Guardando protocolo de confianza... <span class="t-highlight">✓</span></span>
+          <span class="t-out t-comment"># ATLAS no termina aquí.</span>
+          <span class="t-out t-comment"># Este documento es la semilla. El ecosistema es lo que germina.</span>
+          <span class="t-out" style="margin-top:.5rem">Transicionando a: <span class="t-highlight">world_operational_mode</span></span>
+          <span class="t-out">Sistema ahora operando con: protocolo de confianza compuesta activo</span>
+          <span class="t-out t-gold" style="margin-top:.5rem">ATLAS · Foro-Portafolio Mundial · sesión fundacional completa</span>
+          <span class="t-out t-comment"># La diferencia entre quien lee esto y quien lo construye:</span>
+          <span class="t-out t-comment"># exactamente una publicación.</span>
+        </div>
+      </div>
+
+      <div class="prose">
+        ATLAS no es el destino.<br>
+        Es el protocolo para llegar a los destinos<br>
+        que todavía no tienen nombre.<br><br>
+        El conocimiento que traes hoy<br>
+        <em>es la infraestructura del mañana de otros.</em><br><br>
+        Y eso — solamente eso —<br>
+        es lo que el sistema recompensa eternamente.
+      </div>
+
+      <div class="en-prose">
+        You did not arrive here to consume. You arrived because something in you already knew that your knowledge, properly structured and shared, is not a gift — it is a protocol. And protocols, unlike content, compound forever.
+      </div>
+
+      <div class="axiom">
+        <div class="axiom-text">ATLAS termina donde comienza tu primera templanza — escrita no por el miedo a ser copiado, sino por la certeza de que lo que ofreces no puede ser copiado porque lleva la firma de quien eres.</div>
+        <div class="axiom-en">ATLAS ends where your first template begins — written not out of fear of being copied, but from the certainty that what you offer cannot be copied because it carries the signature of who you are.</div>
+      </div>
+
+      <div class="section-div">· · · FIN DEL SISTEMA · ATLAS v1.0 · MUNDO ACTIVO · · ·</div>
+
+      <div class="footnote">
+        ATLAS · Foro-Portafolio Mundial de Código Abierto · Edición Fundacional 2026<br>
+        Tecnología · Finanzas · Sabiduría · Sistema de Rangos · Templanzas · Revenue-Share<br>
+        Diseñado por Diego Vera · Baja California Sur · México<br>
+        Este sistema fue diseñado para ser habitado, no visitado.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="copyToast">[ sistema copiado ✓ ]</div>
+<button id="scrollTop" onclick="document.getElementById('contentArea').scrollTo({top:0,behavior:'smooth'})">▲</button>
+
+<script>
+// ════ BOOT ════
+const bootLines = [
+  { text: '> ATLAS_OS v1.0 · initializing world forum...', cls: '' },
+  { text: '> Montando nodo TECNOLOGÍA...', cls: '' },
+  { text: '> Montando nodo FINANZAS...', cls: '' },
+  { text: '> Montando nodo SABIDURÍA...', cls: '' },
+  { text: '> Cargando sistema de rangos: 5 niveles detectados...', cls: '' },
+  { text: '> Compilando portafolio open-source...', cls: '' },
+  { text: '> Inicializando protocolo de templanzas...', cls: '' },
+  { text: '> WARNING: el conocimiento sin sistema es entropía', cls: 'gold' },
+  { text: '> WARNING: el sistema sin conocimiento es forma vacía', cls: 'gold' },
+  { text: '> ATLAS: la síntesis es el protocolo.', cls: 'cyan' },
+  { text: '> Sistema listo. El mundo puede operar.', cls: '' },
+  { text: '> Ready.', cls: '' },
+];
+
+let lineIdx = 0;
+function bootNext() {
+  if (lineIdx >= bootLines.length) {
+    setTimeout(() => document.getElementById('bootEnter').classList.add('visible'), 500);
+    return;
+  }
+  const d = document.createElement('div');
+  d.className = 'boot-line' + (bootLines[lineIdx].cls ? ' ' + bootLines[lineIdx].cls : '');
+  d.style.animationDelay = '0s';
+  d.innerHTML = bootLines[lineIdx].text;
+  if (lineIdx === bootLines.length - 1) d.style.color = '#fff';
+  document.getElementById('bootLines').appendChild(d);
+  lineIdx++;
+  setTimeout(bootNext, lineIdx < 7 ? 160 : lineIdx < 10 ? 220 : 380);
+}
+
+function enterWorld() {
+  const boot = document.getElementById('boot');
+  boot.style.transition = 'opacity .9s';
+  boot.style.opacity = '0';
+  setTimeout(() => {
+    boot.style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+    initObserver();
+    initProgress();
+    setTimeout(() => document.querySelectorAll('.chapter')[0].classList.add('visible'), 120);
+  }, 900);
+}
+
+// ════ OBSERVER ════
+const SECTION_IDS = ['cover','about','vision','foro','canales','jerarquia','ingresos','moderacion','portafolio','templanzas','reviews','codice','epilogo'];
+
+function initObserver() {
+  const chapters = document.querySelectorAll('.chapter');
+  const navItems = document.querySelectorAll('.nav-item');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        const idx = SECTION_IDS.indexOf(e.target.id);
+        navItems.forEach(n => n.classList.remove('active'));
+        if (idx >= 0 && navItems[idx]) navItems[idx].classList.add('active');
+      }
+    });
+  }, { threshold: .12, root: document.getElementById('contentArea') });
+  chapters.forEach(c => obs.observe(c));
+}
+
+// ════ PROGRESS ════
+function initProgress() {
+  const area = document.getElementById('contentArea');
+  area.addEventListener('scroll', () => {
+    const scrolled = area.scrollTop;
+    const total = area.scrollHeight - area.clientHeight;
+    const pct = Math.round((scrolled / total) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = pct + '%';
+    document.getElementById('readingBar').style.width = pct + '%';
+    document.getElementById('scrollTop').classList.toggle('visible', scrolled > 300);
+  });
+}
+
+function goTo(id) {
+  const el = document.getElementById(id);
+  if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.add('visible'); }
+}
+
+// ════ FORUM TABS ════
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.forum-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.forum-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+});
+
+setTimeout(bootNext, 700);
+</script>
+</body>
+</html>
